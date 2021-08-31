@@ -4,7 +4,7 @@
   :description "A library to roll some dice and get statistics about those rolls."
   :author "Timo Netzer <exodiquas@gmail.com>"
   :license  "MIT"
-  :version "0.0.1"
+  :version "1.0.0"
   :serial t
   :components ((:file "src/package")
 	       (:file "src/utility")
