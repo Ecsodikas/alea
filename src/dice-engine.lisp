@@ -3,7 +3,16 @@
 (defclass dice-engine ()
   ((dice-engine-history
     :accessor de-history
-    :initform '())))
+    :initform '())
+   (dice-engine-average
+    :accessor de-average
+    :initform 0)
+   (dice-engine-highest
+    :accessor de-highest
+    :initform 0)
+   (dice-engine-lowest
+    :accessor de-lowest
+    :initform 0)))
 
 (defun make-dice-engine ()
   "Creates a new dice-engine with an empty history."
@@ -11,8 +20,23 @@
 
 (defmethod de-update-stats ((de dice-engine))
   "Updates all the statistics about the dice rolls in the lifetime of the dice-engine DE."
-  (let ((average-of-rolls 5))
-    average-of-rolls))
+  (let* ((flat-rolls (flatten (de-history de)))
+	 (average-of-rolls (average flat-rolls))
+	 (highest-roll (apply #'max flat-rolls))
+	 (lowest-roll (apply #'min flat-rolls)))
+    (setf (de-average de) average-of-rolls)
+    (setf (de-highest de) highest-roll)
+    (setf (de-lowest de) lowest-roll)))
+
+(defmethod clear-history ((de dice-engine))
+  "Resets the history of the dice-engine DE.
+Standard behaviour:
+Sets the slot dice-engine-history of DE to nil. de-average, de-highest and de-lowest stay unchanged.
+Returns t.
+Exceptional behaviour:
+- None"
+  (setf (de-history de) nil)
+  t)
 
 (defmethod de-roll-dice ((de dice-engine) (sides integer))
     "Roll a dice with SIDES sides. And adds the result to the history of the dice-engine DE.
@@ -23,6 +47,7 @@ Exceptional behaviour:
 - If SIDES is less than 0, the result is 0."
   (let ((result (roll-dice sides)))
     (push result (de-history de))
+    (de-update-stats de)
     result))
 
 (defmethod de-roll-dice-range ((de dice-engine) (from integer) (to integer))
@@ -34,6 +59,7 @@ Exceptional behaviour:
 - The interval is allowed to contain negative numbers as long as FROM < TO."
   (let ((result (roll-dice-range from to)))
     (push result (de-history de))
+    (de-update-stats de)
     result))
 
 (defmethod de-roll-n-dice ((de dice-engine) (n integer) (sides integer))
@@ -45,6 +71,7 @@ Exceptional behaviour:
 - If N is less than 1, the empty list is returned."
   (let ((result (roll-n-dice n sides)))
     (push result (de-history de))
+    (de-update-stats de)
     result))
 
 (defmethod de-roll-n-dice-range ((de dice-engine) (n integer) (from integer) (to integer))
@@ -56,6 +83,7 @@ Exceptional behaviour:
 - If N is less than 1, the empty list is returned."
   (let ((result (roll-n-dice-range n from to)))
     (push result (de-history de))
+    (de-update-stats de)
     result))
 
 (defmethod de-roll-dice-parse ((de dice-engine) (dice-string string))
@@ -72,4 +100,5 @@ Exceptional behaviour:
 - If the string is not parsable, NIL is returned, and if UNMUTE is T, the reason is printed."
   (let ((result (roll-dice-parse dice-string)))
     (push result (de-history de))
+    (de-update-stats de)
     result))

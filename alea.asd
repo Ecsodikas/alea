@@ -7,6 +7,7 @@
   :version "0.0.1"
   :serial t
   :components ((:file "src/package")
+	       (:file "src/utility")
 	       (:file "src/dice")
 	       (:file "src/dice-engine"))
   :in-order-to ((asdf:test-op (asdf:test-op "alea/tests"))))

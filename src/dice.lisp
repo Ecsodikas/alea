@@ -59,14 +59,17 @@ Exceptional behaviour:
   (* target (count-hits rolls target)))
 
 (defun average (rolls)
-  "Given a list of dice rolls ROLLS, calculate the average of all rolls.
+  "Given a list of dice rolls or a single dice roll ROLLS, calculate the average of all rolls.
 Standard behaviour:
 Return the average of all rolls in ROLLS.
 Exceptional behaviour:
-- If ROLLS is NIL, 0 is returned."
-  (if rolls
-      (/ (apply '+ rolls) (length rolls))
-      0))
+- If ROLLS is NIL, 0 is returned.
+- If ROLLS is an integer, ROLLS is returned."
+  (if (integerp rolls)
+      rolls
+      (if rolls
+	  (/ (apply '+ rolls) (length rolls))
+	  0)))
 
 (defun n-highest (rolls n)
   "Given a list of dice rolls ROLLS, return the N highest rolls of them.
